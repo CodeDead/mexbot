@@ -60,8 +60,6 @@ impl EventHandler for Handler {
                 if command.peek().is_some() {
                     symbol_to_compare = command.next().expect("Symbol was empty!");
                 }
-
-                let not_found = symbol_to_compare.clone();
                 match res {
                     Ok(response) => {
                         let mex = response
@@ -117,7 +115,7 @@ impl EventHandler for Handler {
                                 &format!(
                                     "<@{}>\nCurrency {} could not be found",
                                     author.as_u64(),
-                                    not_found
+                                    symbol_to_compare
                                 ),
                             )
                             .await;
@@ -135,6 +133,35 @@ impl EventHandler for Handler {
                         )
                         .await;
                     }
+                }
+            }
+            "/tokens" => {
+                let res = self.elrond_service.get_tokens().await;
+                match res {
+                    Ok(result) => {
+                        if result.len() == 0 {
+                            transmit_message(&msg, &ctx, &format!("<@{}>\nNo MEX tokens listed", author.as_u64())).await;
+                        } else {
+                            let mut token_string = format!("<@{}>\nMEX tokens:```", author.as_u64());
+                            for token in result.iter() {
+                                token_string.push_str(&format!("{} - {}\n", &token.symbol, &token.name));
+                            }
+                            token_string.push_str("```");
+                            transmit_message(&msg, &ctx, &token_string).await;
+                        }
+                    },
+                    Err(error) => {
+                        transmit_message(
+                            &msg,
+                            &ctx,
+                            &format!(
+                                "<@{}>\nError retrieving tokens: {:?}",
+                                author.as_u64(),
+                                error
+                            ),
+                        )
+                        .await;
+                    },
                 }
             }
             "/help" => {
@@ -156,7 +183,8 @@ impl EventHandler for Handler {
 
 #[tokio::main]
 async fn main() {
-    let token = String::from("YOUR TOKEN HERE");
+    let token =
+        String::from("YOUR TOKEN HERE");
 
     let elrond_service = ElrondService::new(
         "https://api.elrond.com/mex/economics",
