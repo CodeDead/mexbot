@@ -44,7 +44,11 @@ impl EventHandler for Handler {
                         transmit_message(
                             &msg,
                             &ctx,
-                            &format!("Error retrieving economics: {:?}", error),
+                            &format!(
+                                "<@{}>\nError retrieving economics: {:?}",
+                                author.as_u64(),
+                                error
+                            ),
                         )
                         .await;
                     }
@@ -85,7 +89,12 @@ impl EventHandler for Handler {
                             };
                             if let Some(y) = default_currency {
                                 if x.symbol == y.symbol {
-                                    transmit_message(&msg, &ctx, "Don't be silly").await;
+                                    transmit_message(
+                                        &msg,
+                                        &ctx,
+                                        &format!("<@{}>\nDon't be silly", author.as_u64()),
+                                    )
+                                    .await;
                                 } else {
                                     transmit_message(
                                         &msg,
@@ -105,7 +114,11 @@ impl EventHandler for Handler {
                             transmit_message(
                                 &msg,
                                 &ctx,
-                                &format!("Currency {} could not be found", not_found),
+                                &format!(
+                                    "<@{}>\nCurrency {} could not be found",
+                                    author.as_u64(),
+                                    not_found
+                                ),
                             )
                             .await;
                         }
@@ -114,7 +127,11 @@ impl EventHandler for Handler {
                         transmit_message(
                             &msg,
                             &ctx,
-                            &format!("Error retrieving economics: {:?}", error),
+                            &format!(
+                                "<@{}>\nError retrieving economics: {:?}",
+                                author.as_u64(),
+                                error
+                            ),
                         )
                         .await;
                     }
