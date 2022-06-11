@@ -140,16 +140,23 @@ impl EventHandler for Handler {
                 match res {
                     Ok(result) => {
                         if result.len() == 0 {
-                            transmit_message(&msg, &ctx, &format!("<@{}>\nNo MEX tokens listed", author.as_u64())).await;
+                            transmit_message(
+                                &msg,
+                                &ctx,
+                                &format!("<@{}>\nNo MEX tokens listed", author.as_u64()),
+                            )
+                            .await;
                         } else {
-                            let mut token_string = format!("<@{}>\nMEX tokens:```", author.as_u64());
+                            let mut token_string =
+                                format!("<@{}>\nMEX tokens:```", author.as_u64());
                             for token in result.iter() {
-                                token_string.push_str(&format!("{} - {}\n", &token.symbol, &token.name));
+                                token_string
+                                    .push_str(&format!("{} - {}\n", &token.symbol, &token.name));
                             }
                             token_string.push_str("```");
                             transmit_message(&msg, &ctx, &token_string).await;
                         }
-                    },
+                    }
                     Err(error) => {
                         transmit_message(
                             &msg,
@@ -161,11 +168,11 @@ impl EventHandler for Handler {
                             ),
                         )
                         .await;
-                    },
+                    }
                 }
             }
             "/help" => {
-                transmit_message(&msg, &ctx, &format!("<@{}>\nCommands:```/economics - Display the Maiar exchange economics\n/price - Display the MEX price\n/price [TOKEN] - Display the price of the given token\n/about - Display about information```", author.as_u64())).await;
+                transmit_message(&msg, &ctx, &format!("<@{}>\nCommands:```/economics - Display the Maiar exchange economics\n/tokens - Display all the available tokens\n/price - Display the MEX price\n/price [TOKEN] - Display the price of the given token\n/about - Display about information```", author.as_u64())).await;
             }
             "/about" => {
                 transmit_message(&msg, &ctx, &format!("<@{}>\nThis bot was created by CodeDead.\nWebsite: https://codedead.com/\nDonate: https://codedead.com/donate\nData source: https://maiar.exchange/", author.as_u64())).await;
@@ -183,8 +190,7 @@ impl EventHandler for Handler {
 
 #[tokio::main]
 async fn main() {
-    let token =
-        String::from("YOUR TOKEN HERE");
+    let token = String::from("YOUR TOKEN HERE");
 
     let elrond_service = ElrondService::new(
         "https://api.elrond.com/mex/economics",
