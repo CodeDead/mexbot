@@ -8,11 +8,13 @@
 ## Commands
 
 * `/economics` - Will display an overview of the MEX economics
-* `/tokens` - Displays all the available tokens
-* `/price` - Displays the current MEX price
-* `/price [TOKEN]` - Displays the price of the requested token
-* `/help` - Displays helpful information
-* `/about` - Displays information about the MexBot
+* `/tokens` - Display all the available tokens
+* `/price` - Display the current MEX price
+* `/price [TOKEN]` - Display the price of the requested token
+* `/farms` - Display MEX standard farms information
+* `/metastaking` - Display MEX metastaking farms information
+* `/help` - Display helpful information
+* `/about` - Display information about the MexBot
 
 ## Usage
 
