@@ -33,7 +33,7 @@ impl EventHandler for Handler {
                             &msg,
                             &ctx,
                             &format!(
-                                "<@{}>\nMEX economics:{}",
+                                "<@{}>\nMEX economics:\n{}",
                                 author.as_u64(),
                                 response.to_string()
                             ),
@@ -148,7 +148,7 @@ impl EventHandler for Handler {
                             .await;
                         } else {
                             let mut token_string =
-                                format!("<@{}>\nMEX tokens:```", author.as_u64());
+                                format!("<@{}>\nMEX tokens:\n```", author.as_u64());
                             for token in result.iter() {
                                 token_string
                                     .push_str(&format!("{} - {}\n", &token.symbol, &token.name));
@@ -172,7 +172,7 @@ impl EventHandler for Handler {
                 }
             }
             "/help" => {
-                transmit_message(&msg, &ctx, &format!("<@{}>\nCommands:```/economics - Display the Maiar exchange economics\n/tokens - Display all the available tokens\n/price - Display the MEX price\n/price [TOKEN] - Display the price of the given token\n/about - Display about information```", author.as_u64())).await;
+                transmit_message(&msg, &ctx, &format!("<@{}>\nCommands:\n```/economics - Display the Maiar exchange economics\n/tokens - Display all the available tokens\n/price - Display the MEX price\n/price [TOKEN] - Display the price of the given token\n/about - Display about information```", author.as_u64())).await;
             }
             "/about" => {
                 transmit_message(&msg, &ctx, &format!("<@{}>\nThis bot was created by CodeDead.\nWebsite: https://codedead.com/\nDonate: https://codedead.com/donate\nData source: https://maiar.exchange/", author.as_u64())).await;
