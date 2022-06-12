@@ -24,7 +24,7 @@ impl EventHandler for Handler {
 
         let mut command = msg.content.as_str().split_whitespace().peekable();
         let cmd = command.next().expect("Command expected!");
-        match cmd {
+        match cmd.to_lowercase().as_str() {
             "/economics" => {
                 let res = self.elrond_service.get_economics().await;
                 match res {
@@ -171,11 +171,87 @@ impl EventHandler for Handler {
                     }
                 }
             }
+            "/farms" => {
+                let response = self.elrond_service.get_farms().await;
+                match response {
+                    Ok(result) => {
+                        if result.len() == 0 {
+                            transmit_message(
+                                &msg,
+                                &ctx,
+                                &format!("<@{}>\nNo farms active at the moment", author.as_u64()),
+                            )
+                            .await;
+                        } else {
+                            let farms_message = format!("<@{}>\nMEX farms:\n", author.as_u64());
+                            transmit_message(&msg, &ctx, &farms_message).await;
+
+                            for farm in result.iter() {
+                                if farm.farm_type.to_lowercase() == "standard" {
+                                    transmit_message(&msg, &ctx, &format!("```Name: {} | {}\nType: {}\nFarmed symbol: {}\nFarming price: {}\nFarmed price: {}```\n", farm.farming_symbol, farm.farming_name, farm.farm_type, farm.farmed_symbol, farm.farming_price, farm.farmed_price)).await;
+                                }
+                            }
+                        }
+                    }
+                    Err(error) => {
+                        transmit_message(
+                            &msg,
+                            &ctx,
+                            &format!(
+                                "<@{}>\nError retrieving farms: {:?}",
+                                author.as_u64(),
+                                error
+                            ),
+                        )
+                        .await;
+                    }
+                }
+            }
+            "/metastaking" => {
+                let response = self.elrond_service.get_farms().await;
+                match response {
+                    Ok(result) => {
+                        if result.len() == 0 {
+                            transmit_message(
+                                &msg,
+                                &ctx,
+                                &format!(
+                                    "<@{}>\nNo metastaking farms active at the moment",
+                                    author.as_u64()
+                                ),
+                            )
+                            .await;
+                        } else {
+                            let farms_message =
+                                format!("<@{}>\nMEX metastaking:\n", author.as_u64());
+                            transmit_message(&msg, &ctx, &farms_message).await;
+
+                            for farm in result.iter() {
+                                if farm.farm_type.to_lowercase() == "metastaking" {
+                                    transmit_message(&msg, &ctx, &format!("```Name: {} | {}\nType: {}\nFarmed symbol: {}\nFarming price: {}\nFarmed price: {}```\n", farm.farming_symbol, farm.farming_name, farm.farm_type, farm.farmed_symbol, farm.farming_price, farm.farmed_price)).await;
+                                }
+                            }
+                        }
+                    }
+                    Err(error) => {
+                        transmit_message(
+                            &msg,
+                            &ctx,
+                            &format!(
+                                "<@{}>\nError retrieving metastaking farms: {:?}",
+                                author.as_u64(),
+                                error
+                            ),
+                        )
+                        .await;
+                    }
+                }
+            }
             "/help" => {
-                transmit_message(&msg, &ctx, &format!("<@{}>\nCommands:\n```/economics - Display the Maiar exchange economics\n/tokens - Display all the available tokens\n/price - Display the MEX price\n/price [TOKEN] - Display the price of the given token\n/about - Display about information```", author.as_u64())).await;
+                transmit_message(&msg, &ctx, &format!("<@{}>\nCommands:\n```/economics - Display the MEX economics\n/tokens - Display all the available tokens\n/price - Display the MEX price\n/price [TOKEN] - Display the price of the given token\n/farms - Display MEX standard farms information\n/metastaking - Display MEX metastaking farms information\n/about - Display about information```", author.as_u64())).await;
             }
             "/about" => {
-                transmit_message(&msg, &ctx, &format!("<@{}>\nThis bot was created by CodeDead.\nWebsite: https://codedead.com/\nDonate: https://codedead.com/donate\nData source: https://maiar.exchange/", author.as_u64())).await;
+                transmit_message(&msg, &ctx, &format!("<@{}>\nThis bot was created by CodeDead.\nWebsite: https://codedead.com/\nDonate: https://codedead.com/donate\nDonate EGLD: erd1rdc6w82ftjsyp5ethh0q56297fsef6w5ht75vyltcjh3ms220urqezdhd3\nData source: https://maiar.exchange/", author.as_u64())).await;
             }
             _ => {
                 // Do nothing
@@ -195,6 +271,7 @@ async fn main() {
     let elrond_service = ElrondService::new(
         "https://api.elrond.com/mex/economics",
         "https://api.elrond.com/mex/tokens",
+        "https://api.elrond.com/mex/farms",
     );
 
     let handler = Handler { elrond_service };
